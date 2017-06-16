@@ -1,5 +1,23 @@
 <section id="action-icons">
   <ul>
+    <li class="separator"><h4>Request</h4></li>
+    <li class="aeon-request">
+    <a href="<?php
+      $title = "&ItemTitle=" . urlencode($resource->getTitle(array('cultureFallback' => true)));
+      $collectionId = "&ItemSubTitle=" . urlencode($resource->getCollectionRoot()->referenceCode);
+      $collectionTitle = "&ItemCitation=" . urlencode($resource->getCollectionRoot()->title);
+      $repository = "&Site=" . urlencode(substr($resource->getCollectionRoot()->identifier, 3, 3));
+      $location = "&ItemVolume=";
+      foreach ( $resource->getPhysicalObjects() as $item ):
+        $location .= urlencode(" " . $item->getLabel());
+      endforeach;
+      $aeon_link_base = "https://aeon.library.miami.edu/aeon/Aeon.dll?Action=10&Form=20&Value=GenericRequestCONTENTdm_Duplication";
+      $aeon_link = $aeon_link_base . $title . $collectionId . $collectionTitle . $referenceCode . $repository . $location;
+      echo $aeon_link;
+    ?>" target="_blank">
+        <i class="fa fa-cube"></i> Request via Aeon
+      </a>
+    </li>
 
     <li class="separator"><h4><?php echo __('Clipboard') ?></h4></li>
 
