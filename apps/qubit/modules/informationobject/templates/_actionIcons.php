@@ -1,5 +1,6 @@
 <section id="action-icons">
   <ul>
+    <li class="separator"><h4>Request</h4></li>
 
     <li class="aeon-request">
       <a href="<?php
