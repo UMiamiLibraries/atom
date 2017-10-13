@@ -27,9 +27,6 @@
  */
 class SettingsGlobalForm extends sfForm
 {
-  protected static $refImageMaxWidthMin = 100;
-  protected static $refImageMaxWidthMax = 2000;
-
   protected static $hitsPerPageMin = 5;
   protected static $hitsPerPageMax = 100;
 
@@ -41,7 +38,6 @@ class SettingsGlobalForm extends sfForm
     $this->setWidgets(array(
       'version' => new sfWidgetFormInput(array(), array('class' => 'disabled', 'disabled' => true)),
       'check_for_updates' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
-      'reference_image_maxwidth' => new sfWidgetFormInput,
       'hits_per_page' => new sfWidgetFormInput,
       'accession_mask_enabled' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
       'accession_mask' => new sfWidgetFormInput,
@@ -51,6 +47,7 @@ class SettingsGlobalForm extends sfForm
       'identifier_counter' => new sfWidgetFormInput,
       'separator_character' => new sfWidgetFormInput(array(), array('maxlength' => 1)),
       'inherit_code_informationobject' => new sfWidgetFormSelectRadio(array('choices' => array(1 => 'yes', 0 => 'no')), array('class' => 'radio')),
+      'escape_queries' => new sfWidgetFormInput,
       'sort_browser_user' => new sfWidgetFormSelectRadio(array('choices' => array('alphabetic' => 'alphabetic', 'lastUpdated' => 'last updated', 'identifier' => 'identifier', 'referenceCode' => $this->i18n->__('reference code'))), array('class' => 'radio')),
       'sort_browser_anonymous' => new sfWidgetFormSelectRadio(array('choices' => array('alphabetic' => 'alphabetic', 'lastUpdated' => 'last updated', 'identifier' => 'identifier', 'referenceCode' => $this->i18n->__('reference code'))), array('class' => 'radio')),
       'default_repository_browse_view' => new sfWidgetFormSelectRadio(array('choices' => array('card' => $this->i18n->__('card'), 'table' => $this->i18n->__('table'))), array('class' => 'radio')),
@@ -74,7 +71,6 @@ class SettingsGlobalForm extends sfForm
     $this->widgetSchema->setLabels(array(
       'version' => $this->i18n->__('Application version'),
       'check_for_updates' => $this->i18n->__('Check for updates'),
-      'reference_image_maxwidth' => $this->i18n->__('Maximum image width (pixels)'),
       'hits_per_page' => $this->i18n->__('Results per page'),
       'accession_mask_enabled' => $this->i18n->__('Accession mask enabled'),
       'accession_mask' => $this->i18n->__('Accession mask'),
@@ -84,6 +80,7 @@ class SettingsGlobalForm extends sfForm
       'identifier_counter' => $this->i18n->__('Identifier counter'),
       'separator_character' => $this->i18n->__('Reference code separator'),
       'inherit_code_informationobject' => $this->i18n->__('Inherit reference code (information object)'),
+      'escape_queries' => $this->i18n->__('Escape special chars from searches'),
       'sort_browser_user' => $this->i18n->__('Sort browser (users)'),
       'sort_browser_anonymous' => $this->i18n->__('Sort browser (anonymous)'),
       'default_repository_browse_view' => $this->i18n->__('Default repository browse view'),
@@ -109,7 +106,6 @@ class SettingsGlobalForm extends sfForm
     $this->widgetSchema->setHelps(array(
       'version' => $this->i18n->__('The current version of the application'),
       'check_for_updates' => $this->i18n->__('Enable automatic update notification'),
-      'reference_image_maxwidth' => $this->i18n->__('The maximum width for derived reference images'),
       'hits_per_page' => $this->i18n->__('The number of records shown per page on list pages'),
       // 'accession_mask' => $this->i18n->__(''),
       // 'accession_counter' => $this->i18n->__(''),
@@ -117,6 +113,7 @@ class SettingsGlobalForm extends sfForm
       'default_archival_description_browse_view' => $this->i18n->__('Set the default view template when browsing archival descriptions'),
       'separator_character' => $this->i18n->__('The character separating hierarchical elements in a reference code'),
       'inherit_code_informationobject' => $this->i18n->__('When set to &quot;yes&quot;, the reference code string will be built using the information object identifier plus the identifiers of all its ancestors'),
+      'escape_queries' => $this->i18n->__('A list of special chars, separated by coma, to be escaped in string queries'),
       'multi_repository' => $this->i18n->__('When set to &quot;no&quot;, the repository name is excluded from certain displays because it will be too repetitive'),
       'enable_institutional_scoping' => $this->i18n->__('Applies to multi-repository sites only. When set to &quot;yes&quot;, additional search and browse options will be available at the repository level'),
       'repository_quota' => $this->i18n->__('Default %1% upload limit for a new %2%.  A value of &quot;0&quot; (zero) disables file upload.  A value of &quot;-1&quot; allows unlimited uploads', array('%1%' => strtolower(sfConfig::get('app_ui_label_digitalobject')), '%2%' => strtolower(sfConfig::get('app_ui_label_repository')))),
@@ -126,20 +123,6 @@ class SettingsGlobalForm extends sfForm
       // 'show_tooltips' => $this->i18n->__('')
       // 'sword_deposit_dir' => $this->i18n->__('')
     ));
-
-    // Reference image max. width validator
-    $this->validatorSchema['reference_image_maxwidth'] = new sfValidatorInteger(
-      array(
-        'required' => true,
-        'min' => self::$refImageMaxWidthMin,
-        'max' => self::$refImageMaxWidthMax
-      ),
-      array(
-        'required' => $this->i18n->__('This field is required'),
-        'min' => $this->i18n->__('This value must be at least %min% pixels'),
-        'max' => $this->i18n->__('This value can not be greater than %max% pixels')
-      )
-    );
 
     // Hits per page validator
     $this->validatorSchema['hits_per_page'] = new sfValidatorInteger(
@@ -162,6 +145,7 @@ class SettingsGlobalForm extends sfForm
     $this->validatorSchema['separator_character'] = new sfValidatorString(array('required' => false));
     $this->validatorSchema['accession_counter'] = new sfValidatorString(array('required' => false));
     $this->validatorSchema['inherit_code_informationobject'] = new sfValidatorInteger(array('required' => false));
+    $this->validatorSchema['escape_queries'] = new sfValidatorString(array('required' => false));
     $this->validatorSchema['sort_browser_user'] = new sfValidatorString(array('required' => false));
     $this->validatorSchema['sort_browser_anonymous'] = new sfValidatorString(array('required' => false));
     $this->validatorSchema['multi_repository'] = new sfValidatorInteger(array('required' => false));
@@ -172,7 +156,6 @@ class SettingsGlobalForm extends sfForm
     $this->validatorSchema['identifier_mask_enabled'] = new sfValidatorInteger(array('required' => false));
     $this->validatorSchema['identifier_mask'] = new sfValidatorString(array('required' => false));
     $this->validatorSchema['identifier_counter'] = new sfValidatorString(array('required' => false));
-
     $this->validatorSchema['repository_quota'] = new sfValidatorNumber(
       array('required' => true, 'min' => -1),
       array('min' => $this->i18n->__('Minimum value is "%min%"')));

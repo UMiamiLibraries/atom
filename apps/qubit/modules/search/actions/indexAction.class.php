@@ -28,7 +28,7 @@ class SearchIndexAction extends DefaultBrowseAction
   {
     parent::execute($request);
 
-    $queryText = new \Elastica\Query\QueryString($request->query);
+    $queryText = new \Elastica\Query\QueryString(arElasticSearchPluginUtil::escapeTerm($request->query));
     $queryText->setDefaultOperator('AND');
     arElasticSearchPluginUtil::setFields($queryText, 'informationObject');
 
@@ -48,16 +48,8 @@ class SearchIndexAction extends DefaultBrowseAction
       $this->search->queryBool->addMust(new \Elastica\Query\Term(array('ancestors' => $request->collection)));
     }
 
+    QubitAclSearch::filterDrafts($this->search->queryBool);
     $this->search->query->setQuery($this->search->queryBool);
-
-    // Filter drafts
-    QubitAclSearch::filterDrafts($this->search->filterBool);
-
-    // Set filter
-    if (0 < count($this->search->filterBool->toArray()))
-    {
-      $this->search->query->setPostFilter($this->search->filterBool);
-    }
 
     $resultSet = QubitSearch::getInstance()->index->getType('QubitInformationObject')->search($this->search->query);
 

@@ -22,7 +22,9 @@ class ObjectExportAction extends DefaultEditAction
   // Arrays not allowed in class constants
   public static
     $NAMES = array(
-      'levels');
+      'levels',
+      'objectType',
+      'format');
 
   private $choices = array();
 
@@ -33,13 +35,12 @@ class ObjectExportAction extends DefaultEditAction
 
   public function execute($request)
   {
+    $this->format = $request->getParameter('format', 'csv');
+    $this->objectType = $request->getParameter('objectType');
+
     parent::execute($request);
 
     $this->response->addJavaScript('exportOptions', 'last');
-
-    // Export type, CSV or XML?
-    $this->type = $request->getParameter('format', 'csv');
-    $this->objectType = $request->getParameter('objectType');
 
     $this->redirectUrl = array('module' => 'object', 'action' => 'export');
     if (null !== $referrer = $request->getReferer())
@@ -86,6 +87,39 @@ class ObjectExportAction extends DefaultEditAction
 
         break;
 
+      case 'objectType':
+        if (isset($this->objectType))
+        {
+          $choices = array(
+            $this->objectType => sfConfig::get('app_ui_label_'.strtolower($this->objectType))
+          );
+        }
+        else
+        {
+          $choices = array(
+            'informationObject' => sfConfig::get('app_ui_label_informationobject'),
+            'actor' => sfConfig::get('app_ui_label_actor'),
+            'repository' => sfConfig::get('app_ui_label_repository')
+          );
+        }
+
+        $this->form->setValidator('objectType', new sfValidatorString(array('required' => true)));
+        $this->form->setWidget('objectType', new sfWidgetFormSelect(array('choices' => $choices)));
+
+        break;
+
+      case 'format':
+        $choices = array(
+          'csv' => $this->context->i18n->__('CSV'),
+          'xml' => $this->context->i18n->__('XML')
+        );
+
+        $this->form->setDefault('format', $this->format);
+        $this->form->setValidator('format', new sfValidatorString(array('required' => true)));
+        $this->form->setWidget('format', new sfWidgetFormSelect(array('choices' => $choices)));
+
+        break;
+
       default:
         return parent::addField($name);
     }
@@ -93,7 +127,8 @@ class ObjectExportAction extends DefaultEditAction
 
   protected function processField($field)
   {
-    switch ($field->getName())
+    $name = $field->getName();
+    switch ($name)
     {
       case 'levels':
         $this->levels = $this->form->getValue('levels');
@@ -103,6 +138,15 @@ class ObjectExportAction extends DefaultEditAction
         }
 
         break;
+
+      case 'objectType':
+      case 'format':
+        $this->$name = $this->form->getValue($name);
+
+        break;
+
+      default:
+        return parent::processField($field);
     }
   }
 
@@ -120,11 +164,17 @@ class ObjectExportAction extends DefaultEditAction
       'current-level-only' => 'on' !== $request->getParameter('includeDescendants'),
       'public' => 'on' !== $request->getParameter('includeDrafts'),
       'objectType' => $this->objectType,
-      'levels' => $levelsOfDescription
+      'levels' => $levelsOfDescription,
+      'name' => $this->context->i18n->__('CSV export')
     );
 
+    if ('xml' === $this->format)
+    {
+      $options['name'] = $this->context->i18n->__('XML export');
+    }
+
     // When exporting actors, ensure aliases and relations are also exported.
-    if ('actor' === $this->objectType && 'CSV' === strtoupper($this->type))
+    if ('actor' === $this->objectType && 'csv' === $this->format)
     {
       $options['aliases'] = true;
       $options['relations'] = true;
@@ -132,16 +182,27 @@ class ObjectExportAction extends DefaultEditAction
 
     try
     {
-      QubitJob::runJob($this->getJobNameString(), $options);
+      $job = QubitJob::runJob($this->getJobNameString(), $options);
 
-      // Let user know export has started
-      sfContext::getInstance()->getConfiguration()->loadHelpers(array('Url'));
+      // If anonymous user, store job ID in session
+      if (!$this->context->user->isAuthenticated())
+      {
+        $manager = new QubitUnauthenticatedUserJobManager($this->context->user);
+        $manager->addJobAssociation($job);
+      }
 
-      $message = $this->context->i18n->__('%1%Export of descriptions initiated.%2% Check %3%job management%4% page to download the results when it has completed.', array(
-        '%1%' => '<strong>',
-        '%2%' => '</strong>',
-        '%3%' => sprintf('<a href="%s">', url_for(array('module' => 'jobs', 'action' => 'browse'))),
-        '%4%' => '</a>'));
+      if ($this->context->user->isAuthenticated())
+      {
+        $message = $this->context->i18n->__('%1%Export initiated.%2% Check %3%job management%4% page to download the results when it has completed.', array(
+          '%1%' => '<strong>',
+          '%2%' => '</strong>',
+          '%3%' => sprintf('<a href="%s">', $this->context->routing->generate(null, array('module' => 'jobs', 'action' => 'browse'))),
+          '%4%' => '</a>'));
+      }
+      else
+      {
+        $message = $this->context->i18n->__('Export initiated. Progress will be reported, and a download link provided, in a subsequent notification &mdash; <a href="javascript:location.reload();">refresh the page</a> for updates.');
+      }
 
       $this->context->user->setFlash('notice', $message);
     }
@@ -157,7 +218,7 @@ class ObjectExportAction extends DefaultEditAction
     switch ($this->objectType)
     {
       case 'informationObject':
-        if ('CSV' == strtoupper($this->type))
+        if ('csv' == $this->format)
         {
           return 'arInformationObjectCsvExportJob';
         }
@@ -167,7 +228,7 @@ class ObjectExportAction extends DefaultEditAction
         }
 
       case 'actor':
-        if ('CSV' == strtoupper($this->type))
+        if ('csv' == $this->format)
         {
           return 'arActorCsvExportJob';
         }

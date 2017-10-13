@@ -248,7 +248,7 @@ function render_treeview_node($item, array $classes = array(), array $options = 
 
     if (isset($options['numSiblingsLeft']))
     {
-      $node .= abs($options['numSiblingsLeft']) . ' more';
+      $node .= sfContext::getInstance()->i18n->__('%1% more', array('%1%' => abs($options['numSiblingsLeft'])));
     }
 
     $node .= '...</a>';
@@ -314,14 +314,6 @@ function check_field_visibility($fieldName, $options = array())
 
 function get_search_i18n($hit, $fieldName, $options = array())
 {
-  // If the fields requested to Elasticserach have been manually specified the
-  // fields will be flatterned, e.g. $r['i18n.es.title'] vs $r['i18n']['es']['title']
-  $flat = false;
-  if (isset($options['flat']))
-  {
-    $flat = $options['flat'];
-  }
-
   // The default is to return "Untitled" unless allowEmpty is true
   $allowEmpty = true;
   if (isset($options['allowEmpty']))
@@ -362,40 +354,26 @@ function get_search_i18n($hit, $fieldName, $options = array())
     $hit = $hit->getData(); // type=sfOutputEscaperArrayDecorator
   }
 
-  $accessField = function($culture) use ($hit, $fieldName, $flat)
+  $accessField = function($culture) use ($hit, $fieldName)
   {
-    if ($flat)
+    if (is_object($hit) && 'sfOutputEscaperArrayDecorator' === get_class($hit))
     {
-      $key = sprintf("i18n.%s.%s", $culture, $fieldName);
-      $r = $hit->get($key)->get(0);
-      if (empty($r))
+      $i18nRaw = $hit->getRaw('i18n');
+      if (empty($i18nRaw[$culture][$fieldName]))
       {
         return false;
       }
 
-      return $r;
+      return $hit->get('i18n')->get($culture)->get($fieldName);
     }
     else
     {
-      if (is_object($hit) && 'sfOutputEscaperArrayDecorator' === get_class($hit))
+      if (empty($hit['i18n'][$culture][$fieldName]))
       {
-        $i18nRaw = $hit->getRaw('i18n');
-        if (empty($i18nRaw[$culture][$fieldName]))
-        {
-          return false;
-        }
-
-        return $hit->get('i18n')->get($culture)->get($fieldName);
+        return false;
       }
-      else
-      {
-        if (empty($hit['i18n'][$culture][$fieldName]))
-        {
-          return false;
-        }
 
-        return $hit['i18n'][$culture][$fieldName];
-      }
+      return $hit['i18n'][$culture][$fieldName];
     }
   };
 
@@ -609,9 +587,9 @@ function render_search_result_date($date)
 
   foreach ((array)$date as $item)
   {
-    $displayDate = get_search_i18n($item, 'date', array('culture' => $culture));
-    $startDate = $item['startDateString'];
-    $endDate = $item['endDateString'];
+    $displayDate = get_search_i18n($item, 'date');
+    $startDate = isset($item['startDateString']) ? $item['startDateString'] : null;
+    $endDate = isset($item['endDateString']) ? $item['endDateString'] : null;
 
     if (empty($displayDate) && empty($startDate) && empty($endDate))
     {

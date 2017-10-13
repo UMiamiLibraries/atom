@@ -2748,23 +2748,34 @@ class QubitInformationObject extends BaseInformationObject
    */
   public static function getByTitleIdentifierAndRepo ($identifier, $title, $repoName)
   {
-    $sf_user = sfContext::getInstance()->user;
-    $currentCulture = $sf_user->getCulture();
-
-    // looking for exact match
-    $queryBool = new \Elastica\Query\BoolQuery;
-    $queryBool->addMust(new \Elastica\Query\MatchAll);
-    $queryBool->addMust(new \Elastica\Query\Term(array('identifier' => $identifier)));
-    $queryBool->addMust(new \Elastica\Query\Term(array(sprintf('i18n.%s.title.untouched', $currentCulture) => $title)));
-    $queryBool->addMust(new \Elastica\Query\Term(array(sprintf('repository.i18n.%s.authorizedFormOfName.untouched', $currentCulture) => $repoName)));
-
-    $query = new \Elastica\Query($queryBool);
-    $query->setLimit(1);
-    $resultSet = QubitSearch::getInstance()->index->getType('QubitInformationObject')->search($query);
-
-    if ($resultSet->count())
+    if (null !== $identifier && null !== $title)
     {
-      return $resultSet[0]->getId();
+      $sf_user = sfContext::getInstance()->user;
+      $currentCulture = $sf_user->getCulture();
+
+      $queryBool = new \Elastica\Query\BoolQuery;
+
+      // Use match query for exact matches.
+      $queryText = new \Elastica\Query\Match;
+      $queryBool->addMust($queryText->setFieldQuery('identifier', $identifier));
+
+      $queryText = new \Elastica\Query\Match;
+      $queryBool->addMust($queryText->setFieldQuery(sprintf('i18n.%s.title.untouched', $currentCulture), $title));
+
+      if (null !== $repoName)
+      {
+        $queryText = new \Elastica\Query\Match;
+        $queryBool->addMust($queryText->setFieldQuery(sprintf('repository.i18n.%s.authorizedFormOfName.untouched', $currentCulture), $repoName));
+      }
+
+      $query = new \Elastica\Query($queryBool);
+      $query->setSize(1);
+      $resultSet = QubitSearch::getInstance()->index->getType('QubitInformationObject')->search($query);
+
+      if ($resultSet->count())
+      {
+        return $resultSet[0]->getId();
+      }
     }
   }
 
@@ -3230,7 +3241,7 @@ class QubitInformationObject extends BaseInformationObject
 
     // If we still have a blank or null value here, QubitObject will eventually create a random
     // slug for us. See QubitObject::insertSlug().
-    return QubitSlug::slugify($stringToSlugify, false);
+    return QubitSlug::slugify($stringToSlugify);
   }
 
   /**
@@ -3295,13 +3306,19 @@ class QubitInformationObject extends BaseInformationObject
 
   /**
    * Delete this information object as well as all children information objects.
+   *
+   * @return int  Number of QubitInformationObjects deleted.
    */
   public function deleteFullHierarchy()
   {
+    $n = 0;
     foreach ($this->descendants->andSelf()->orderBy('rgt') as $item)
     {
       $item->delete();
+      $n++;
     }
+
+    return $n;
   }
 
   /**

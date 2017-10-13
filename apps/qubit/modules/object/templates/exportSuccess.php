@@ -30,24 +30,15 @@
 
         <legend><?php echo __('Export options') ?></legend>
         <div class="form-item">
-          <label><?php echo __('Type') ?></label>
-          <select name="objectType">
-            <?php if (!isset($objectType)): ?>
-              <option value="informationObject"><?php echo sfConfig::get('app_ui_label_informationobject') ?></option>
-              <option value="actor"><?php echo sfConfig::get('app_ui_label_actor') ?></option>
-              <option value="repository"><?php echo sfConfig::get('app_ui_label_repository') ?></option>
-            <?php else: ?>
-              <option value="<?php echo $objectType ?>"><?php echo sfConfig::get('app_ui_label_'.strtolower($objectType)) ?></option>
-            <?php endif; ?>
-          </select>
+          <?php echo $form->objectType
+            ->label(__('Type'))
+            ->renderRow() ?>
         </div>
 
         <div class="form-item">
-          <label><?php echo __('Format') ?></label>
-          <select name="format">
-            <option value="csv"<?php echo ('xml' != $type) ? ' selected="selected"' : '' ?>><?php echo __('CSV') ?></option>
-            <option value="xml"<?php echo ('xml' == $type) ? ' selected="selected"' : '' ?>><?php echo __('XML') ?></option>
-          </select>
+          <?php echo $form->format
+            ->label(__('Format'))
+            ->renderRow() ?>
         </div>
 
         <div class="form-item">
@@ -61,10 +52,12 @@
                 <a href="#" class="generic-help-icon" aria-expanded="false"><i class="fa fa-question-circle pull-right"></i></a>
               </div>
 
-              <label>
-                <input name="includeDrafts" type="checkbox"/>
-                <?php echo __('Include draft records') ?>
-              </label>
+              <?php if ($sf_user->isAuthenticated()): ?>
+                <label>
+                  <input name="includeDrafts" type="checkbox"/>
+                  <?php echo __('Include draft records') ?>
+                </label>
+              <?php endif; ?>
               <label>
                 <input name="includeAllLevels" type="checkbox"/>
                 <?php echo __('Include all levels of description') ?>
@@ -79,7 +72,9 @@
 
             <div class="alert alert-info generic-help animateNicely">
               <p><?php echo __('Choosing "Include descendants" will include all lower-level records beneath those currently on the clipboard in the export.') ?></p>
-              <p><?php echo __('Choosing "Include draft records" will include those marked with a Draft publication status in the export. Note: if you do NOT choose this option, any descendants of a draft record will also be excluded, even if they are published.') ?></p>
+              <?php if ($sf_user->isAuthenticated()): ?>
+                <p><?php echo __('Choosing "Include draft records" will include those marked with a Draft publication status in the export. Note: if you do NOT choose this option, any descendants of a draft record will also be excluded, even if they are published.') ?></p>
+              <?php endif; ?>
             </div>
 
           </div>

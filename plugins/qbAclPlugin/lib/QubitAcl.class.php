@@ -194,7 +194,7 @@ class QubitAcl
 
   public static function isAllowed($role, $resource, $action, $options = array())
   {
-    if (!($role instanceOf myUser))
+    if (!isset(class_implements($role)['Zend_Acl_Role_Interface']))
     {
       self::getInstance()->addRole($role);
     }
@@ -640,7 +640,7 @@ class QubitAcl
   /**
    * Get a list of user permissions by action and class of resource
    *
-   * @param myUser $user - user session
+   * @param sfBasicSecurityUser $user - user session
    * @param string $action - requested ACL action
    * @param string $class - resource class
    *

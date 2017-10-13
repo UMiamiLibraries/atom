@@ -92,7 +92,7 @@ class DefaultMoveAction extends sfAction
     $this->parent = QubitObject::getBySlug($this->form->parent->getValue());
 
     $this->query = new \Elastica\Query();
-    $this->query->setLimit($request->limit);
+    $this->query->setSize($request->limit);
 
     if (!empty($request->page))
     {
@@ -103,7 +103,7 @@ class DefaultMoveAction extends sfAction
 
     if (isset($request->query))
     {
-      $query = new \Elastica\Query\QueryString($request->query);
+      $query = new \Elastica\Query\QueryString(arElasticSearchPluginUtil::escapeTerm($request->query));
       $query->setDefaultOperator('AND');
       $query->setFields(array(
         'identifier',

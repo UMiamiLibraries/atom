@@ -90,7 +90,7 @@ class TaxonomyIndexAction extends sfAction
     $culture = $this->context->user->getCulture();
 
     $this->query = new \Elastica\Query();
-    $this->query->setLimit($request->limit);
+    $this->query->setSize($request->limit);
 
     if (!empty($request->page))
     {
@@ -98,7 +98,6 @@ class TaxonomyIndexAction extends sfAction
     }
 
     $this->queryBool = new \Elastica\Query\BoolQuery;
-    $this->filterBool = new \Elastica\Filter\BoolFilter;
 
     $query = new \Elastica\Query\Term;
     $query->setTerm('taxonomyId', $this->resource->id);
@@ -106,7 +105,7 @@ class TaxonomyIndexAction extends sfAction
 
     if (1 !== preg_match('/^[\s\t\r\n]*$/', $request->subquery))
     {
-      $queryString = new \Elastica\Query\QueryString($request->subquery);
+      $queryString = new \Elastica\Query\QueryString(arElasticSearchPluginUtil::escapeTerm($request->subquery));
 
       switch ($request->subqueryField)
       {
@@ -126,14 +125,13 @@ class TaxonomyIndexAction extends sfAction
           $fields = array('i18n.%s.name', 'useFor.i18n.%s.name');
           $boost = array('i18n.%s.name' => 5);
           $queryString->setFields(arElasticSearchPluginUtil::getI18nFieldNames($fields, null, $boost));
-          $queryString->setDefaultOperator('OR');
+          $queryString->setDefaultOperator('AND');
 
           break;
       }
 
       // Filter results by subquery
-      $filter = new \Elastica\Filter\Query($queryString);
-      $this->filterBool->addMust($filter);
+      $this->queryBool->addMust($queryString);
     }
 
     // Set query
@@ -152,12 +150,6 @@ class TaxonomyIndexAction extends sfAction
       case 'lastUpdated':
       default:
         $this->query->setSort(array('updatedAt' => 'desc'));
-    }
-
-    // Set filter
-    if (0 < count($this->filterBool->toArray()))
-    {
-      $this->query->setPostFilter($this->filterBool);
     }
 
     $resultSet = QubitSearch::getInstance()->index->getType('QubitTerm')->search($this->query);

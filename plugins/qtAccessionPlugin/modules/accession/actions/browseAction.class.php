@@ -56,7 +56,7 @@ class AccessionBrowseAction extends sfAction
     $culture = $this->context->user->getCulture();
 
     $this->query = new \Elastica\Query;
-    $this->query->setLimit($request->limit);
+    $this->query->setSize($request->limit);
 
     if (!empty($request->page))
     {
@@ -71,7 +71,7 @@ class AccessionBrowseAction extends sfAction
     }
     else
     {
-      $queryString = new \Elastica\Query\QueryString($request->subquery);
+      $queryString = new \Elastica\Query\QueryString(arElasticSearchPluginUtil::escapeTerm($request->subquery));
 
       $boost = array(
         'donors.i18n.%s.authorizedFormOfName' => 10,

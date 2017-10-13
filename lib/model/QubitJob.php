@@ -54,6 +54,11 @@ class QubitJob extends BaseJob
   {
     parent::delete($connection);
 
+    if (isset($job->downloadPath))
+    {
+      unlink($job->downloadPath);
+    }
+
     foreach ($this->notes as $note)
     {
       $note->delete();
@@ -205,7 +210,7 @@ class QubitJob extends BaseJob
 
   /**
    * Add a basic note to this job
-   * @param  myUser  $user  the currently logged in user.
+   * @param  sfBasicSecurityUser  $user  the currently logged in user.
    */
   public static function getJobsByUser($user)
   {
