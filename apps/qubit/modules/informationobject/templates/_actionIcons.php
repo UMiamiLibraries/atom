@@ -2,21 +2,44 @@
   <ul>
     <li class="separator"><h4>Request</h4></li>
 
-    <li class="aeon-request">
-      <a href="<?php
-        $title = "&ItemTitle=" . urlencode($resource->getTitle(array('cultureFallback' => true)));
-        $collectionId = "&ItemSubTitle=" . urlencode($resource->getCollectionRoot()->referenceCode);
-        $collectionTitle = "&ItemCitation=" . urlencode($resource->getCollectionRoot()->title);
-        $repository = "&Site=" . urlencode(substr($resource->getCollectionRoot()->identifier, 3, 3));
-        $location = "&ItemVolume=";
+    <li>
+      <i class="fa fa-cube" style="padding-left: 4px"></i>
+      <?php
+        $id = explode( ":", $resource->getCollectionRoot()->descriptionIdentifier )[ 1 ];
+        $title = $resource->getTitle(array('cultureFallback' => true));
+        $creator = $resource->getCreatorsNameString();
+        $collectionIdentifier = $resource->getCollectionRoot()->identifier;
+        $repositoryCode = substr($collectionIdentifier, 0, 3);
+        if ( $repositoryCode === 'ASM' || $repositoryCode == 'ASU' ) { $repositoryCode = 'ASC'; }
+        $collectionId = $resource->getCollectionRoot()->referenceCode;
+        $collectionTitle = $resource->getCollectionRoot()->title;
+        if ( $resource->getDates()[0] == NULL ) {
+          $date = 'Unknown';
+        } else {
+          $date = Qubit::renderDateStartEnd( $resource->getDates()[0]->getDate(array('cultureFallback' => true)), $resource->getDates()[0]->startDate, $resource->getDates()[0]->endDate );
+        }
+        $location = "";
         foreach ( $resource->getPhysicalObjects() as $item ):
-          $location .= urlencode(" " . $item->getLabel());
+          $location .= " " . $item->getLabel();
         endforeach;
-        $aeon_link_base = "https://aeon.library.miami.edu/aeon/aeon.dll?Action=10&Form=20&Value=GenericRequestCONTENTdm_ReadingRoom&RequestType=Loan";
-        $aeon_link = $aeon_link_base . $title . $collectionId . $collectionTitle . $referenceCode . $repository . $location;
-        echo $aeon_link; ?>" target="_blank">
-        <i class="fa fa-cube"></i> Request via Aeon
-      </a>
+        echo "<form name='AeonRequest' target='_blank' method='post' action='https://aeon.library.miami.edu/aeon/aeon.dll' style='display: inline'>";
+        echo "<input name='AeonForm' value='EADRequest' type='hidden'>";
+        echo "<input name='RequestType' value='Loan' type='hidden'>";
+        echo "<input name='DocumentType' value='Manuscript' type='hidden'>";
+        echo "<div id=\"{$id}\" style='display: inline'>";
+          echo "<input name=\"Request\" type=\"hidden\" value=\"{$id}\">";
+          echo "<input value=\"{$title}\" name=\"ItemTitle_{$id}\" type=\"hidden\">";
+          echo "<input value=\"{$creator}\" name=\"ItemAuthor_{$id}\" type=\"hidden\">";
+          echo "<input value=\"{$date}\" name=\"ItemDate_{$id}\" type=\"hidden\">";
+          echo "<input value=\"{$location}\" name=\"ItemVolume_{$id}\" type=\"hidden\">";
+          echo "<input value=\"{$collectionTitle}\" name=\"Location_{$id}\" type=\"hidden\">";
+          echo "<input value=\"{$repositoryCode}\" name=\"Site\" type=\"hidden\">";
+          echo "<input value=\"{$collectionIdentifier}\" name=\"CallNumber_{$id}\" type=\"hidden\">";
+          echo "<input id='UserReview' name='UserReview' value='Yes' type='checkbox' style='display:none' checked='checked'>";
+        echo "</div>";
+        echo "<input name='SubmitButton' value='Submit request' type='submit' style='display: inline; color: #049cdb; outline: none; border: none; background-color: transparent; padding: 0px; font-size: 12px'>";
+      echo "</form>";
+      ?>
     </li>
 
     <li class="separator"><h4><?php echo __('Clipboard') ?></h4></li>
