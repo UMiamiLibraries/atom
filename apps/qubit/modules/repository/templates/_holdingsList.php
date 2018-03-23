@@ -5,7 +5,7 @@
   <div class="more">
     <a href="<?php echo url_for(array('module' => 'informationobject', 'action' => 'browse', 'repos' => $resource->id)) ?>">
       <i class="fa fa-search"></i>
-      <?php echo __('Browse %1% holdings', array('%1%' => $pager->getNbResults())) ?>
+      <?php echo __('Browse %1% '.strtolower(sfConfig::get('app_ui_label_holdings')), array('%1%' => $pager->getNbResults())) ?>
     </a>
   </div>
   <ul>
