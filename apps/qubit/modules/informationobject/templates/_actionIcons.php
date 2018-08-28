@@ -4,7 +4,8 @@
 
     <li>
       <i class="fa fa-cube" style="padding-left: 4px"></i>
-d = explode( ":", $resource->getCollectionRoot()->descriptionIdentifier )[ 1 ];
+      <?php
+        $id = explode( ":", $resource->getCollectionRoot()->descriptionIdentifier )[ 1 ];
         $title = $resource->getTitle(array('cultureFallback' => true));
         $creator = $resource->getCreatorsNameString();
         $collectionIdentifier = $resource->getCollectionRoot()->identifier;
@@ -38,9 +39,9 @@ d = explode( ":", $resource->getCollectionRoot()->descriptionIdentifier )[ 1 ];
           echo "<input value=\"{$collectionIdentifier}\" name=\"CallNumber_{$id}\" type=\"hidden\">";
           echo "<input id='UserReview' name='UserReview' value='Yes' type='checkbox' style='display:none' checked='checked'>";
         echo "</div>";
-			echo "<input name='SubmitButton' value='Submit request' type='submit' style='display: inline; color: #049cdb; outline: none; border: none; background-color: transparent; padding: 0px; font-size: 12px'>";
+        echo "<input name='SubmitButton' value='Submit request' type='submit' style='display: inline; color: #049cdb; outline: none; border: none; background-color: transparent; padding: 0px; font-size: 12px'>";
 		echo "</form>";
-		?>
+      ?>
 	</li>
 
 	<li class="separator"><h4><?php echo __('Clipboard') ?></h4></li>
