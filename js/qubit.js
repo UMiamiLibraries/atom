@@ -13,23 +13,3 @@ window.log = function()
     }
   };
 
-// jQuery expander
-Drupal.behaviors.expander = {
-  attach: function (context)
-    {
-      jQuery('div.field:not(:has(div.field)) > div').each(function (index, element) {
-        var $element = jQuery(element);
-        // Don't apply expander to fields with only one child, if that child is a list
-        if ($element.children().length !== 1 || !$element.children().first().is('ul')) {
-          $element.expander({
-            slicePoint: 255,
-            expandText: '&raquo;',
-            expandPrefix: '... ',
-            userCollapseText: '&laquo;',
-            widow: 4,
-            expandEffect: 'show'
-          });
-        }
-      });
-    }
-  };
