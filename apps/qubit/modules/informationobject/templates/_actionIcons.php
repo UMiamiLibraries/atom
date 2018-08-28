@@ -22,8 +22,24 @@
         foreach ( $resource->getPhysicalObjects() as $item ):
           $location .= " " . $item->getLabel();
         endforeach;
-        if ( $title ) { $location .= " -- " . $title; }
         $repository = $resource->getCollectionRoot()->getRepository();
+        $breadcrumb = $resource;
+        $i = $resource;
+        while( $i->parent != $resource->getCollectionRoot() && $i != $resource->getCollectionRoot() ) {
+          if (isset( $i->parent )):
+            if ( $i->parent == "" ):
+              foreach ( $resource->getPhysicalObjects() as $item ):
+                $containers .= " " . $item->getLabel();
+              endforeach;
+              $breadcrumb = "" . ">" . $breadcrumb;
+            else:
+              $breadcrumb = $i->parent . ">" . $breadcrumb;
+            endif;
+          endif;
+          $i = $i->parent;
+        }
+        $location = $breadcrumb . ">" . $location;
+
         echo "<form name='AeonRequest' target='_blank' method='post' action='https://aeon.library.miami.edu/aeon/aeon.dll' style='display: inline'>";
         echo "<input name='AeonForm' value='EADRequest' type='hidden'>";
         echo "<input name='RequestType' value='Loan' type='hidden'>";
@@ -37,12 +53,13 @@
           echo "<input value=\"{$repository}\" name=\"Location_{$id}\" type=\"hidden\">";
           echo "<input value=\"{$repositoryCode}\" name=\"Site\" type=\"hidden\">";
           echo "<input value=\"{$collectionIdentifier}\" name=\"CallNumber_{$id}\" type=\"hidden\">";
+          /* Comment out or remove the UserReview checkbox in production */
           echo "<input id='UserReview' name='UserReview' value='Yes' type='checkbox' style='display:none' checked='checked'>";
         echo "</div>";
         echo "<input name='SubmitButton' value='Submit request' type='submit' style='display: inline; color: #049cdb; outline: none; border: none; background-color: transparent; padding: 0px; font-size: 12px'>";
-		echo "</form>";
+      echo "</form>";
       ?>
-	</li>
+    </li>
 
 	<li class="separator"><h4><?php echo __('Clipboard') ?></h4></li>
 
