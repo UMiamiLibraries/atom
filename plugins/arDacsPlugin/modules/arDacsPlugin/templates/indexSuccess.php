@@ -38,10 +38,6 @@
 
   <?php echo get_partial('informationobject/placeAccessPoints', array('resource' => $resource, 'sidebar' => true)) ?>
 
-  <?php if (check_field_visibility('app_element_visibility_physical_storage')): ?>
-    <?php echo get_component('physicalobject', 'contextMenu', array('resource' => $resource)) ?>
-  <?php endif; ?>
-
 <?php end_slot() ?>
 
 <?php slot('before-content') ?>
@@ -52,6 +48,10 @@
 
 <?php if (0 < count($resource->digitalObjects)): ?>
   <?php echo get_component('digitalobject', 'show', array('link' => $digitalObjectLink, 'resource' => $resource->digitalObjects[0], 'usageType' => QubitTerm::REFERENCE_ID)) ?>
+<?php endif; ?>
+
+<?php if (check_field_visibility('app_element_visibility_physical_storage') && $sf_user->isAuthenticated()): ?>
+  <?php echo get_component('physicalobject', 'contextMenu', array('resource' => $resource)) ?>
 <?php endif; ?>
 
 <section id="identityArea">
