@@ -24,3 +24,7 @@
 
 # Transifex files
 .tx/i18n
+
+\.idea/
+
+nul
