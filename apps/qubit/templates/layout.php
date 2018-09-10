@@ -4,7 +4,7 @@
     <?php include_http_metas() ?>
     <?php include_metas() ?>
     <?php include_title() ?>
-    <link rel="shortcut icon" href="<?php echo public_path('favicon.ico') ?>"/>
+      <link rel="shortcut icon"  href="<?php echo public_path('favicon.ico') . "?v=1" ?>"/>
     <?php include_stylesheets() ?>
     <?php include_component_slot('css') ?>
     <?php if ($sf_context->getConfiguration()->isDebug()): ?>
