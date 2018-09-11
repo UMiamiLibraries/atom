@@ -24,3 +24,7 @@
 
 # Transifex files
 .tx/i18n
+
+#IDE
+atom-dev-source-code.iml
+.idea/
