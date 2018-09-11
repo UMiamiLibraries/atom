@@ -2,7 +2,7 @@
   <ul>
     <li class="separator"><h4>Request material</h4></li>
 
-    <li>
+    <li class="request-material">
       <i class="fa fa-cube" style="padding-left: 4px"></i>
       <?php
         $id = explode( ":", $resource->getCollectionRoot()->descriptionIdentifier )[ 1 ];
@@ -56,7 +56,7 @@
           /* Comment out or remove the UserReview checkbox in production */
           echo "<input id='UserReview' name='UserReview' value='Yes' type='checkbox' style='display:none' checked='checked'>";
         echo "</div>";
-        echo "<input name='SubmitButton' value='Submit request' type='submit' style='display: inline; color: #049cdb; outline: none; border: none; background-color: transparent; padding: 0px; font-size: 12px'>";
+        echo "<input name='SubmitButton' value='Submit request' type='submit' class='btn-request-material'>";
       echo "</form>";
       ?>
     </li>
