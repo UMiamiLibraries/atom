@@ -8,3 +8,109 @@
     line-height: 1.5em;
     text-align: center;
 }
+
+
+.request-material {
+    background-color: #f17430;
+    padding: 4px 10px 6px 10px;
+    border-radius: 4px;
+    display: inline-block;
+    cursor: pointer;
+    
+    i {
+        padding-left: 0 !important;
+        padding-right: 4px;
+        color: #FFF;
+    }
+
+    .btn-request-material {
+        display: inline;
+        color: #FFF;
+        outline: none;
+        border: none;
+        background-color: transparent;
+        padding: 0;
+        font-size: 12px;
+    }
+
+    &:hover,
+    &active {
+        -webkit-transition: all 0.35s ease-in-out;
+        -moz-transition: all 0.35s ease-in-out;
+        transition: all 0.35s ease-in-out;
+        background-color: darken(#f17430,10);
+    }
+}
+
+#ui-datepicker-div {
+    display: none;
+}
+
+footer {
+    background-color: #4f5b65;
+    color: #FFF;
+    padding: 20px 10px;
+
+    .footer-logo {
+        width: 77px;
+        height: 60px;
+        margin-bottom: 10px;
+    }
+
+    h4,
+    p {
+        margin-bottom: 4px;
+        margin-top:0;
+        line-height:1.2em;
+    }
+
+    h4 {
+        font-size: 16px;
+    }
+
+    p {
+        font-size: 14px;
+        font-weight: normal;
+    }
+
+    a {
+        color: white;
+        text-decoration: none;
+        outline: none;
+
+        &:hover,
+        &:focus {
+            color: #ff9f55;
+            text-decoration: none;
+        }
+    }
+
+    i.fa {
+       margin-right: 4px;
+        font-size: 20px;
+    }
+
+    .fdlp-logo {
+        width: 95px;
+        height: 30px;
+        margin-top: 10px;
+    }
+
+    .social {
+        margin: 10px 0;
+    }
+
+    @media (min-width: 768px) {
+        padding: 20px 0;
+
+        .social,
+        .supplemental {
+            text-align: right;
+            margin: 0;
+        }
+    }
+
+
+}
+
+
