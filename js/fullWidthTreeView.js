@@ -119,6 +119,12 @@
         // Attach the Drupal Behaviour so blank.js does its thing
         Drupal.attachBehaviors(document)
 
+        if ( data.instance.get_parent( data.node ) === '#' || $( '#physical-objects' ).length === 0 ) {
+            $( '#request-material' ).hide();
+        } else if ( $( '#physical-objects' )) {
+            $( '#request-material' ).show();
+        }
+
         // Update the url, TODO save the state
         window.history.pushState(null, null, url);
       });
@@ -199,6 +205,10 @@
       .bind('hover_node.jstree', hoverNodeListener)
       .bind('open_node.jstree', openNodeListener)
       .bind('move_node.jstree', moveNodeListener);
+
+    if ( $fwTreeView.jstree( true ).is_selected( $( '#fullwidth-treeview li' ).first() ) || $( '#physical-objects' ).length === 0 ) {
+    $( '#request-material' ).hide();
+    }
 
     // TODO restore window.history states
     $(window).bind('popstate', function() {});

@@ -3,6 +3,7 @@
     <li class="separator"><h4>Request material</h4></li>
 
     <li>
+      <div id="request-material">
       <i class="fa fa-cube" style="padding-left: 4px"></i>
       <?php
         $id = explode( ":", $resource->getCollectionRoot()->descriptionIdentifier )[ 1 ];
@@ -60,6 +61,7 @@
       echo "</form>";
       ?>
     </li>
+    </div>
 
 	<li class="separator"><h4><?php echo __('Clipboard') ?></h4></li>
 
