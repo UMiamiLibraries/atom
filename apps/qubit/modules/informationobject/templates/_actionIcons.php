@@ -1,5 +1,6 @@
 <section id="action-icons">
   <ul>
+    <div id="request-material-block">
     <li class="separator"><h4>Request material</h4></li>
 
     <li class="request-material">
@@ -60,6 +61,7 @@
       echo "</form>";
       ?>
     </li>
+    </div>
 
 	<li class="separator"><h4><?php echo __('Clipboard') ?></h4></li>
 
