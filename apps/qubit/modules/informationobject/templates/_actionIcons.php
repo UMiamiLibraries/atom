@@ -1,17 +1,14 @@
 <section id="action-icons">
     <ul>
-
-		<?php if ( $sf_context->getConfiguration()->isPluginEnabled( 'umlContactUsAboutThisCollectionPlugin' ) ): ?>
+	    <?php
+	    $mailto = ContactusEmailAction::getContactUsEmail( $resource );
+	    ?>
+		<?php if (!empty($mailto)): ?>
             <li class="separator">
-				<?php
-				$actor_id = 'contactus/email/5';
-
-                ?>
-                <a href="<?php echo $actor_id?>">
+                <a href="<?php echo $mailto?>">
                     <i class="fa fa-envelope"></i>
 					<?php echo __( 'Contact us about this collection' ) ?>
                 </a>
-                <!--              --><?php //var_dump($resource); die();?>
             </li>
 		<?php endif; ?>
 
