@@ -119,7 +119,7 @@
         // Attach the Drupal Behaviour so blank.js does its thing
         Drupal.attachBehaviors(document)
 
-        if ( data.instance.get_parent( data.node ) === '#' || $( '#physical-objects' ).length === 0 ) {
+        if ( data.instance.get_parent( data.node ) === '#' ) {
             $( '#request-material' ).hide();
         } else if ( $( '#physical-objects' )) {
             $( '#request-material' ).show();
@@ -206,8 +206,8 @@
       .bind('open_node.jstree', openNodeListener)
       .bind('move_node.jstree', moveNodeListener);
 
-    if ( $fwTreeView.jstree( true ).is_selected( $( '#fullwidth-treeview li' ).first() ) || $( '#physical-objects' ).length === 0 ) {
-    $( '#request-material' ).hide();
+    if ( $fwTreeView.jstree( true ).is_selected( $( '#fullwidth-treeview li' ).first() )) {
+      $( '#request-material' ).hide();
     }
 
     // TODO restore window.history states
