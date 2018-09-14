@@ -1,7 +1,13 @@
 <section id="action-icons">
   <ul>
-  <?php if ( count( $resource->getPhysicalObjects() ) && $resource != $resource->getCollectionRoot() ): ?>
-    <div id="request-material-block">
+  <?php
+    $collectionIdentifier = $resource->getCollectionRoot()->identifier;
+    $repositoryCode = substr($collectionIdentifier, 0, 3);
+
+    if (( $repositoryCode != 'CHC' && $repositoryCode != 'ASM' ||
+          $resource != $resource->getCollectionRoot() &&
+          count( $resource->getPhysicalObjects() ))): ?>
+
     <li class="separator"><h4>Request material</h4></li>
 
     <li class="request-material">
@@ -10,8 +16,6 @@
         $id = explode( ":", $resource->getCollectionRoot()->descriptionIdentifier )[ 1 ];
         $title = $resource->getTitle(array('cultureFallback' => true));
         $creator = $resource->getCreatorsNameString();
-        $collectionIdentifier = $resource->getCollectionRoot()->identifier;
-        $repositoryCode = substr($collectionIdentifier, 0, 3);
         if ( $repositoryCode === 'ASM' || $repositoryCode == 'ASU' ) { $repositoryCode = 'ASC'; }
         $collectionId = $resource->getCollectionRoot()->referenceCode;
         $collectionTitle = $resource->getCollectionRoot()->title;
@@ -62,7 +66,6 @@
       echo "</form>";
       ?>
     </li>
-    </div>
   <?php endif; ?>
 
 	<li class="separator"><h4><?php echo __('Clipboard') ?></h4></li>
