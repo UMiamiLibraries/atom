@@ -1,5 +1,6 @@
 <section id="action-icons">
   <ul>
+  <?php if ( count( $resource->getPhysicalObjects() ) && $resource != $resource->getCollectionRoot() ): ?>
     <div id="request-material">
     <li class="separator"><h4>Request material</h4></li>
 
@@ -62,6 +63,7 @@
       ?>
     </li>
     </div>
+  <?php endif; ?>
 
 	<li class="separator"><h4><?php echo __('Clipboard') ?></h4></li>
 
