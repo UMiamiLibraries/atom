@@ -117,7 +117,7 @@
 
 
         // Attach the Drupal Behaviour so blank.js does its thing
-        Drupal.attachBehaviors(document)
+        Drupal.attachBehaviors(document);
 
         // Update the url, TODO save the state
         window.history.pushState(null, null, url);
