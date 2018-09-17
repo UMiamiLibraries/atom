@@ -160,7 +160,18 @@ class DefaultBrowseAction extends sfAction
     $this->limit = sfConfig::get('app_hits_per_page');
     if (isset($request->limit) && ctype_digit($request->limit))
     {
-      $this->limit = $request->limit;
+	    $this->limit = $request->limit;
+    	if (isset($_GET['limit'])){
+    		$limit = $_GET['limit'];
+		    $limit = filter_var ( $limit, FILTER_SANITIZE_STRING);
+
+    		if (ctype_digit($limit) && intval($limit)){
+			    if ($limit == 10 || $limit == 20 || $limit == 50 || $limit == 100){
+				    $this->limit = $limit;
+			    }
+		    }
+	    }
+
     }
 
     $skip = 0;
