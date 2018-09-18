@@ -55,9 +55,10 @@
         <li class="publication-status"><?php echo QubitCache::getLabel($doc['publicationStatusId'], 'QubitTerm') ?></li>
       <?php endif; ?>
       <?php if (isset($doc['partOf'])): ?>
-        <p><?php echo __('Part of '), link_to(render_title(get_search_i18n($doc['partOf'], 'title',
-                 array('allowEmpty' => false, 'culture' => $culture, 'cultureFallback' => true))),
-                 array('slug' => $doc['partOf']['slug'], 'module' => 'informationobject')) ?></p>
+        <p>
+          <?php echo ("Part of: ") ?>
+					<?php echo get_partial('default/breadcrumb', array('objects' => QubitInformationObject::getById( $doc[ 'ancestors' ][ count( $doc[ 'ancestors' ])-1 ])->ancestors->andSelf())) ?>
+        </p>
       <?php endif; ?>
     </ul>
 
