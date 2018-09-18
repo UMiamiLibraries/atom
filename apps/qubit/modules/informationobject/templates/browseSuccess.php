@@ -305,6 +305,8 @@
           'tableView' => $tableView, 'module' => 'informationobject')) ?>
       </span>
 
+	    <?php echo get_partial('default/showOnlyPicker', array()) ?>
+
       <?php echo get_partial('default/sortPicker', array(
         'options' => array(
           'lastUpdated'   => __('Most recent'),
