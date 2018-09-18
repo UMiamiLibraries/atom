@@ -127,16 +127,32 @@ header#top-bar {
         list-style-type: none;
 
         li {
-            margin-right: 10px;
+            margin-right: 10px !important;
 
             &::after {
                 content: "\f101";
                 font-family: 'FontAwesome';
                 color: #f17430;
-                padding: 0 1px 0 0;
+                padding: 0 1px 0 6px;
             }
         }
     }
 }
+
+.search-result .result-details {
+    li {
+        margin-right: 10px !important;
+
+        &::after {
+            content: "\f101";
+            font-family: 'FontAwesome';
+            color: #f17430;
+            padding: 0 1px 0 6px;
+            margin-right: 2px;
+        }
+    }
+}
+
+
 
 
