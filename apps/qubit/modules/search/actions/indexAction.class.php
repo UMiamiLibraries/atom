@@ -76,12 +76,25 @@ class SearchIndexAction extends DefaultBrowseAction
     {
       $data = $item->getData();
       $levelOfDescription = QubitTerm::getById($data['levelOfDescriptionId']);
+      $breadcrumb = "";
+
+	  if (isset($data['ancestors']) && !empty($data['ancestors'])){
+	  	$titles = [];
+	  	$count_ancestors = count($data['ancestors']);
+	  	for ($i = 1; $i < $count_ancestors; $i = $i+1){
+		    $info = QubitInformationObject::getById( $data[ 'ancestors' ][$i]);
+		    $titles[] =  render_title($info);
+	  	}
+		  $breadcrumb = join(" > ", $titles);
+	  }
 
       $result = array(
         'url' => url_for(array('module' => 'informationobject', 'slug' => $data['slug'])),
         'title' => esc_specialchars(get_search_i18n($data, 'title', array('allowEmpty' => false))),
         'identifier' => isset($data['identifier']) && !empty($data['identifier']) ? esc_specialchars($data['identifier']).' - ' : '',
-        'level' => null !== $levelOfDescription ? esc_specialchars($levelOfDescription->getName()) : '');
+        'level' => null !== $levelOfDescription ? esc_specialchars($levelOfDescription->getName()) : '',
+	    'breadcrumb' => $breadcrumb
+	);
 
       $response['results'][] = $result;
     }

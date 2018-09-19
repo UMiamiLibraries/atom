@@ -622,7 +622,7 @@
               {
                 var item = data.results[i];
                 var link = '<a href="' + item.url + '">' + item.title + '</a>';
-                $list.append('<li data-title="' + item.level + '" data-content="' + item.identifier + item.title + '"></li>').children(':last-child').append(link);
+                $list.append('<li data-title="' + item.level + '" data-content="'  + item.breadcrumb +'"></li>').children(':last-child').append(link);
               }
 
               // Show more
