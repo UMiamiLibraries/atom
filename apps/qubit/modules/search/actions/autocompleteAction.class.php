@@ -70,7 +70,12 @@ class SearchAutocompleteAction extends sfAction
         'type' => 'QubitTerm',
         'field' => sprintf('i18n.%s.name', $culture),
         'fields' => array('slug', sprintf('i18n.%s.name', $culture)),
-        'term_filter' => array('taxonomyId' => QubitTaxonomy::SUBJECT_ID))) as $item)
+        'term_filter' => array('taxonomyId' => QubitTaxonomy::SUBJECT_ID)),
+	    array(
+		    'type' => 'QubitInformationObject',
+		    'field' => sprintf('i18n.%s.title', $culture),
+		    'fields' => array('slug', sprintf('i18n.%s.title', $culture), 'title'),
+		    'term_filter' => array('parentId' => 1))) as $item)
     {
       $search = new \Elastica\Search($client);
       $search
@@ -136,6 +141,7 @@ class SearchAutocompleteAction extends sfAction
     $this->actors = $resultSets[2];
     $this->places = $resultSets[3];
     $this->subjects = $resultSets[4];
+	$this->collections = $resultSets[5];
 
     // Return a 404 response if there are no results
     if (0 == $this->descriptions->getTotalHits() + $this->repositories->getTotalHits() + $this->actors->getTotalHits() + $this->places->getTotalHits() + $this->subjects->getTotalHits())
