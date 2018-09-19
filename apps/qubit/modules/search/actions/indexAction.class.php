@@ -83,7 +83,7 @@ class SearchIndexAction extends DefaultBrowseAction
 	  	$count_ancestors = count($data['ancestors']);
 	  	for ($i = 1; $i < $count_ancestors; $i = $i+1){
 		    $info = QubitInformationObject::getById( $data[ 'ancestors' ][$i]);
-		    $titles[] =  render_title($info);
+		    $titles[] =  render_title($info, false);
 	  	}
 		  $breadcrumb = join(" > ", $titles);
 	  }
