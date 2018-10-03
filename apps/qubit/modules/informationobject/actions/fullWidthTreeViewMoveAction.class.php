@@ -51,6 +51,8 @@ class InformationObjectFullWidthTreeViewMoveAction extends sfAction
 
     $oldPosition = $request->getParameter('oldPosition');
     $newPosition = $request->getParameter('newPosition');
+	$old_parent = $request->getParameter('oldParent');
+	$new_parent = $request->getParameter('newParent');
 
     // Empty or non numeric positions are not allowed
     if (!is_numeric($oldPosition) || !is_numeric($newPosition))
@@ -61,7 +63,7 @@ class InformationObjectFullWidthTreeViewMoveAction extends sfAction
     }
 
     // Moving to the same position
-    if ($oldPosition == $newPosition)
+    if ($oldPosition == $newPosition && $old_parent === $new_parent)
     {
       $this->response->setStatusCode(400);
 
@@ -71,7 +73,9 @@ class InformationObjectFullWidthTreeViewMoveAction extends sfAction
     $params = array(
       'objectId' => $this->resource->id,
       'oldPosition' => $oldPosition,
-      'newPosition' => $newPosition
+      'newPosition' => $newPosition,
+	  'oldParent' => $old_parent,
+	  'newParent' => $new_parent
     );
 
     // Catch no Gearman worker available exception

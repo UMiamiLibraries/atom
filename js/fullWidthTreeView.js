@@ -74,10 +74,7 @@
           // Operations allowed:
           // - Before and after drag and drop between siblings
           // - Move core operations (node drop event)
-          return operation === 'move_node'
-            && (more.core || (more.dnd
-            && node.parent === more.ref.parent
-            && more.pos !== 'i'));
+          return operation === 'move_node';
         }
       }
     };
@@ -148,14 +145,14 @@
     var moveNodeListener = function (e, data)
     {
       $("#fullwidth-treeview .tooltip").remove();
-
       // Avoid request if new and old positions are the same,
       // this can't be avoided in the check_callback function
       // because we don't have both positions in there
-      if (data.old_position === data.position)
+      if (data.old_position === data.position && data.oldParent === data.parent)
       {
         return;
       }
+
 
       var moveResponse = $.parseJSON($.ajax({
         url: data.node.a_attr.href + '/informationobject/fullWidthTreeViewMove',
@@ -163,7 +160,9 @@
         async: false,
         data: {
           'oldPosition': data.old_position,
-          'newPosition': data.position
+          'newPosition': data.position,
+          'oldParent': data.old_parent,
+          'newParent': data.parent
         }
       }).responseText);
 

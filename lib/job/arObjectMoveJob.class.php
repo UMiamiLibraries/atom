@@ -73,6 +73,36 @@ class arObjectMoveJob extends arBaseJob
       }
     }
 
+//    UML Case: Move item between parents
+    if (isset($parameters['oldParent']) && isset($parameters['newParent']))
+    {
+    	$old_parent = $parameters['oldParent'];
+    	$new_parent = $parameters['newParent'];
+	    $objectId = $parameters['objectId'];
+
+	    if ( $old_parent !== $new_parent ) {
+
+		    $this->info( $this->i18n->__( 'Moving object between parents' ) );
+
+		    // Check current positions to avoid mismatch
+		    $sql      = "UPDATE information_object SET parent_id = :newParent WHERE id = :object_id";
+		    $params   = array( ':newParent' => $new_parent, ':object_id' => $objectId );
+		    QubitPdo::prepareAndExecute( $sql, $params, array( 'fetchMode' => PDO::FETCH_ASSOC ) );
+
+		    $parentNode = QubitObject::getById( $new_parent );
+
+		    $this->info( $this->i18n->__( 'Moving object to parent (id: %1)', array( '%1' => $new_parent ) ) );
+		    $object->moveToFirstChildOf( $parentNode );
+
+		    // Mark job as completed
+		    $this->info( 'Move completed.' );
+		    $this->job->setStatusCompleted();
+		    $this->job->save();
+
+		    return true;
+	    }
+    }
+
     // Move between siblings if requested
     if (isset($parameters['oldPosition']) && isset($parameters['newPosition']))
     {
