@@ -16,7 +16,7 @@
     $collectionIdentifier = $resource->getCollectionRoot()->identifier;
     $repositoryCode = substr($collectionIdentifier, 0, 3);
 
-    if (( $repositoryCode != 'CHC' && $repositoryCode != 'ASM' ||
+    if (( $repositoryCode != 'ASM' ||
           $resource != $resource->getCollectionRoot() &&
           count( $resource->getPhysicalObjects() ))): ?>
 
